@@ -10,14 +10,6 @@ Setlocal EnableDelayedExpansion
 :: Ensure we have the installers downloaded
 if not exist downloads (mkdir downloads)
 
-:: Download the hyper terminal
-if exist downloads/hyper.exe (
-	echo Already downloaded hyper
-) else (
-	curl -LJ --output downloads/hyper.exe --url "https://github.com/vercel/hyper/releases/download/v3.2.0/Hyper-Setup-3.2.0.exe"	
-	echo Finished downloading Hyper
-)
-
 :: Now we need to download the nightly build from Msys2 if they don't already exists
 if exist downloads/msys2.exe (
 	echo Already downloaded MSys2
@@ -28,7 +20,7 @@ if exist downloads/msys2.exe (
 
 :: Check for the error state
 if not !errorLevel! == 0 (
-	echo failed to download either Msys2 or Hyper installers check downloads folder
+	echo failed to download Msys2
 	cmd /k
 	exit
 )
@@ -44,9 +36,9 @@ set "msys2_install="
 
 if exist "C:\Program Files\Msys2\uninstall.exe" (set "MSYS2_PATH=C:\Program Files\Msys2")
 if exist "C:\msys64\uninstall.exe" (set "MSYS2_PATH=C:\msys64")
-if exist "C:\Msys2\uninstall.exe" (set "MSYS2_PATH=C:\Msys2")
 
-:: Only if an install of msys2 was found then should we ask if they want to reinstall
+:: We require that users reinstall Msys2 when their install is not located inside 
+:: C\:Msys2
 if defined MSYS2_PATH (
 	echo Do you want to reinstall Msys2 into C:\Msys2? y/n"
 	set /p MSYS_UNINSTALL=""
@@ -69,11 +61,13 @@ if defined MSYS2_PATH (
 		set "MSYS2_PATH=C:\Msys2"
 		set "msys2_install=y"
 
-		:: We have to wait a little bit for the file system to update
+		echo After uninstall we need to wait to let file system update before installing
 		timeout /t 2
 
 	) else (
-		echo Not uninstalling Msys2
+		echo Sorry you need to move your Msys2 install location to C:\Msys2 
+		cmd /k 
+		exit 
 	)
 ) else (
 	echo No Msys2 install detected 
@@ -105,6 +99,14 @@ if not !errorLevel! == 0 (
 	echo Installing Choco
 	call :CheckAdmin
 	@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+	if not !errorLevel! == 0 (
+		echo Failed to install choco somewhere
+		cmd /k 
+		exit
+	) else (
+		echo Installed Choco Succesfully
+	)
 ) else (
 	echo Already got choco installed
 )
@@ -112,6 +114,14 @@ if not !errorLevel! == 0 (
 ::
 :: Use choco to install hyper
 ::
+where /q hyper
+if not !errorLevel! == 0 (
+	echo Installing Hyper 
+	call :CheckAdmin
+	choco install hyper -y
+
+	echo Finished installing hyper
+)
 
 
 :: 
