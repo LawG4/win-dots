@@ -3,6 +3,10 @@
 :: Variables must now be referenced with a !_!
 Setlocal EnableDelayedExpansion 
 
+::
+:: Download resources
+::
+
 :: Ensure we have the installers downloaded
 if not exist downloads (mkdir downloads)
 
@@ -28,6 +32,10 @@ if not !errorLevel! == 0 (
 	cmd /k
 	exit
 )
+
+::
+:: Msys2 
+::
 
 :: Find the location of the Msys uinstaller 
 :: That will be are basis for if the location of msys2 has been found
@@ -87,6 +95,33 @@ if defined msys2_install (
 	)
 )
 
-:: C:\Users\Lawrence\AppData\Local\Programs\Hyper
+::
+:: Choco for hyper
+::
+where /q choco
+if not !errorLevel! == 0 (
+	:: We need an admin shell for choco
+	call :CheckAdmin
+
+	echo Installing Choco
+	@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+) else (
+	echo Already got choco installed
+)
+
+::
+:: Use choco to install hyper
+::
+
+
+:: 
 echo Done installing Lawrence Windots
 cmd /k
+
+:CheckAdmin
+	net session > nul 2>&1
+	if not !errorLevel! == 0 (
+		echo Need admin rights to install chocolatey
+		cmd /k 
+		exit 
+	)
