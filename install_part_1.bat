@@ -38,12 +38,12 @@ set "MSYS2_PATH="
 set "msys2_install="
 
 if exist "C:\Program Files\Msys2\uninstall.exe" (set "MSYS2_PATH=C:\Program Files\Msys2")
-if exist "C:\msys64\uninstall.exe" (set "MSYS2_PATH=C:\msys64")
+if exist "C:\Msys2\uninstall.exe" (set "MSYS2_PATH=C:\Msys2")
 
 :: We require that users reinstall Msys2 when their install is not located inside 
 :: C\:Msys2
 if defined MSYS2_PATH (
-	echo Do you want to reinstall Msys2 into C:\Msys2? y/n"
+	echo Do you want to reinstall Msys2 into C:\msys64? y/n"
 	set /p MSYS_UNINSTALL=""
 
 	if /i "!MSYS_UNINSTALL!" == "y" (
@@ -61,22 +61,22 @@ if defined MSYS2_PATH (
 		)
 
 		:: Schedule Msys2 to be installed
-		set "MSYS2_PATH=C:\Msys2"
+		set "MSYS2_PATH=C:\msys64"
 		set "msys2_install=y"
 
 		echo After uninstall we need to wait to let file system update before installing
 		timeout /t 2
 
 	) else (
-		echo Sorry you need to move your Msys2 install location to C:\Msys2 
+		echo Sorry you need to move your Msys2 install location to C:\msys64 
 		cmd /k 
 		exit 
 	)
 ) else (
-	if not exist C:\Msys2\uninstall.exe (
+	if not exist C:\msys64\uninstall.exe (
 		echo No Msys2 install detected 
 		:: The user does not have a Msys2 install so set the required paths
-		set "MSYS2_PATH=C:\Msys2"
+		set "MSYS2_PATH=C:\msys64"
 		set "msys2_install=y"
 	)
 )
@@ -84,7 +84,7 @@ if defined MSYS2_PATH (
 if defined msys2_install (
 	echo Installing Msys2
 	call :CheckAdmin
-	downloads\msys2.exe in --confirm-command --accept-messages --root C:/Msys2
+	downloads\msys2.exe in --confirm-command --accept-messages --root C:\msys64
 
 	:: We need to change the write privilledges on the Msys folder 
 	:: Because we installed it as an admin 
@@ -150,4 +150,4 @@ cmd /k
 	)
 
 :SetWritePermissions
-	icacls C:\Msys2 /grant Everyone:(OI)(CI)F /T > nul
+	icacls C:\msys64 /grant Everyone:(OI)(CI)F /T > nul
