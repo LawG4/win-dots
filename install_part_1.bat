@@ -73,10 +73,12 @@ if defined MSYS2_PATH (
 		exit 
 	)
 ) else (
-	echo No Msys2 install detected 
-	:: The user does not have a Msys2 install so set the required paths
-	set "MSYS2_PATH=C:\Msys2"
-	set "msys2_install=y"
+	if not exist C:\Msys2\uninstall.exe (
+		echo No Msys2 install detected 
+		:: The user does not have a Msys2 install so set the required paths
+		set "MSYS2_PATH=C:\Msys2"
+		set "msys2_install=y"
+	)
 )
 
 if defined msys2_install (
@@ -129,8 +131,9 @@ if not !errorLevel! == 0 (
 	echo Installing Hyper 
 	call :CheckAdmin
 	choco install hyper -y
-
 	echo Finished installing hyper
+) else (
+	echo Already got Hyper installed
 )
 
 
