@@ -3,6 +3,9 @@
 :: Variables must now be referenced with a !_!
 Setlocal EnableDelayedExpansion 
 
+:: Since this was probably called in admin mode, move to this folder first
+cd %~dp0
+
 ::
 :: Download resources
 ::
@@ -81,6 +84,13 @@ if defined msys2_install (
 	call :CheckAdmin
 	downloads\msys2.exe in --confirm-command --accept-messages --root C:/Msys2
 
+	:: We need to change the write privilledges on the Msys folder 
+	:: Because we installed it as an admin 
+	:: But we want to be able to use pacman without being in an 
+	:: admin shell because that's a pain
+	echo Adding write permissions for you ...
+	call :SetWritePermissions
+
 	if not !errorLevel! == 0 (
 		echo Failed to install msys2 
 		cmd /k 
@@ -135,3 +145,6 @@ cmd /k
 		cmd /k 
 		exit 
 	)
+
+:SetWritePermissions
+	icacls C:\Msys2 /grant Everyone:(OI)(CI)F /T > nul
