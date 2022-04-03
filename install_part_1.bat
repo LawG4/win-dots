@@ -52,8 +52,8 @@ if defined MSYS2_PATH (
 	set /p MSYS_UNINSTALL=""
 
 	if /i "!MSYS_UNINSTALL!" == "y" (
-		echo "Uninstalling Msys2"
-
+		echo Uninstalling Msys2
+		call :CheckAdmin
 		!MSYS2_PATH!\uninstall.exe pr --confirm-command
 
 		:: Check that the uinstall worked
@@ -84,6 +84,7 @@ if defined MSYS2_PATH (
 
 if defined msys2_install (
 	echo Installing Msys2
+	call :CheckAdmin
 	downloads\msys2.exe in --confirm-command --accept-messages --root C:/Msys2
 
 	if not !errorLevel! == 0 (
@@ -101,9 +102,8 @@ if defined msys2_install (
 where /q choco
 if not !errorLevel! == 0 (
 	:: We need an admin shell for choco
-	call :CheckAdmin
-
 	echo Installing Choco
+	call :CheckAdmin
 	@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 ) else (
 	echo Already got choco installed
@@ -121,7 +121,7 @@ cmd /k
 :CheckAdmin
 	net session > nul 2>&1
 	if not !errorLevel! == 0 (
-		echo Need admin rights to install chocolatey
+		echo Need admin rights for this step
 		cmd /k 
 		exit 
 	)
