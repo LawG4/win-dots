@@ -6,6 +6,10 @@ Setlocal EnableDelayedExpansion
 :: Since this was probably called in admin mode, move to this folder first
 cd %~dp0
 
+:: Get the home directory
+set "HOME=!homedrive!!homepath!"
+echo Using home directory : !HOME!
+
 ::
 :: Download resources
 ::
@@ -152,6 +156,29 @@ if not !errorLevel! == 0 (
 	echo Finished installing git
 ) else (
 	echo Already got Git installed
+)
+
+::
+:: Install Gpg
+::
+where /q gpg
+if not !errorLevel! == 0 (
+	echo Installing gpg
+	call :CheckAdmin
+	choco install gpg4win -y --force
+	echo Finished installing gpg
+
+	:: Set the git config to use are gnu install
+	git config --global gpg.program "/c/Program Files (x86)/GnuPG/bin/gpg.exe"
+
+	:: Don't use tty for signing
+	echo no-tty >> !HOME!\.gnupg\gpg.conf
+
+	:: Set the agent to start automatically
+	xcopy /s /y "C:\Program Files (x86)\GnuPG\bin\gpg-connect-agent.exe" "!appdata!\Microsoft\Windows\Start Menu\Programs\Startup"
+	echo Set gpg to start automatically
+) else (
+	echo Already got gpg installed 
 )
 
 :: 
