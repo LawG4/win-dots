@@ -136,6 +136,10 @@ if not !errorLevel! == 0 (
 	echo Already got Hyper installed
 )
 
+::
+:: Copy the default version of the hyper config
+::
+xcopy /s /y hyper-themes\default\win.js !appdata!\Hyper\.hyper.js 
 
 :: 
 echo Done installing Lawrence Windots
