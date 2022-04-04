@@ -141,6 +141,19 @@ if not !errorLevel! == 0 (
 ::
 xcopy /s /y hyper-themes\default\win.js !appdata!\Hyper\.hyper.js 
 
+::
+:: Install git
+::
+where /q git
+if not !errorLevel! == 0 (
+	echo Installing git 
+	call :CheckAdmin
+	choco install git -y
+	echo Finished installing git
+) else (
+	echo Already got Git installed
+)
+
 :: 
 echo Done installing Lawrence Windots
 cmd /k
