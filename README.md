@@ -25,3 +25,12 @@ We need to run the install batch file first, and it needs to be ran with adminis
 
 Now that we have a terminal emulator and bash installed we can now run the themes, This is manly just focused around hyper so it should be fine. Open this folder in the terminal 
 
+![ThemeSwitch](images/ThemeSwitch.png)
+
+Then we can use the theme script to copy the theme into the hyper config file location
+
+```bash
+# We pass the theme name as a paramater to the script
+theme.sh pokemon
+```
+
